@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus text-success fa-3x mb-3"></i>
+                        <h2 class="fw-bold">Create Your FoodShare Account</h2>
+                        <p class="text-muted">Join our community to reduce food waste and help others</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('register') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">{{ form.username.label }} <span class="text-danger">*</span></label>
+                                {{ form.username(class="form-control", placeholder="Choose a username") }}
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.username.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">{{ form.email.label }} <span class="text-danger">*</span></label>
+                                {{ form.email(class="form-control", placeholder="Enter your email") }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.email.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">{{ form.name.label }} <span class="text-danger">*</span></label>
+                            {{ form.name(class="form-control", placeholder="Enter your full name or organization name") }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">{{ form.phone.label }} <span class="text-danger">*</span></label>
+                                {{ form.phone(class="form-control", placeholder="Enter your phone number") }}
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.phone.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="role" class="form-label">{{ form.role.label }} <span class="text-danger">*</span></label>
+                                {{ form.role(class="form-select") }}
+                                {% if form.role.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.role.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">{{ form.address.label }} <span class="text-danger">*</span></label>
+                            {{ form.address(class="form-control", placeholder="Enter your address", rows=2) }}
+                            {% if form.address.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.address.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Location picker map -->
+                        <!-- <div class="mb-4">
+                            <label class="form-label">Pin Your Location <span class="text-muted">(Click on the map to set your location)</span></label>
+                            <div id="map" class="location-picker-map" data-page-type="location-picker" data-lat-field="latitude" data-lng-field="longitude" data-address-field="address"></div>
+                            {{ form.latitude(id="latitude", type="hidden") }}
+                            {{ form.longitude(id="longitude", type="hidden") }}
+                        </div> -->
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">{{ form.password.label }} <span class="text-danger">*</span></label>
+                                {{ form.password(class="form-control", placeholder="Create a password (min. 8 characters)") }}
+                                {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.password.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="confirm_password" class="form-label">{{ form.confirm_password.label }} <span class="text-danger">*</span></label>
+                                {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
+                                {% if form.confirm_password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.confirm_password.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    I agree to the <a href="#" class="text-success">Terms of Service</a> and <a href="#" class="text-success">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-success btn-lg") }}
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}" class="text-success">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

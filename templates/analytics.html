@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0">Analytics Dashboard</h1>
+            <p class="text-muted">Track your impact on reducing food waste</p>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        {% if current_user.role == 'donor' %}
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Donations</h6>
+                                <h3 class="mb-0">{{ stats.total_donations or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Completed</h6>
+                                <h3 class="mb-0">{{ stats.completed_donations or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Food Saved (lbs)</h6>
+                                <h3 class="mb-0">{{ stats.completed_donations * 5 or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-weight-scale"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">CO₂ Reduced (kg)</h6>
+                                <h3 class="mb-0">{{ (stats.completed_donations * 5 * 2.5)|round(1) or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Pickups</h6>
+                                <h3 class="mb-0">{{ stats.requested_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-shopping-basket"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Completed</h6>
+                                <h3 class="mb-0">{{ stats.completed_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Food Received (lbs)</h6>
+                                <h3 class="mb-0">{{ stats.completed_pickups * 5 or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-weight-scale"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Waste Prevented (kg)</h6>
+                                <h3 class="mb-0">{{ (stats.completed_pickups * 5 * 2.5)|round(1) or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <!-- Activity Over Time Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" style="color: black;">
+                        <i class="fas fa-chart-line text-success me-2"></i>
+                        {% if current_user.role == 'donor' %}
+                            Donation Activity Over Time
+                        {% else %}
+                            Pickup Activity Over Time
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if months and monthly_counts %}
+                        <canvas id="donationsChart" 
+                                height="300" 
+                                data-months="{{ months|tojson }}" 
+                                data-counts="{{ monthly_counts|tojson }}">
+                        </canvas>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h5>No Data Available Yet</h5>
+                            <p class="text-muted">
+                                {% if current_user.role == 'donor' %}
+                                    Complete some donations to see your activity over time.
+                                {% else %}
+                                    Complete some pickups to see your activity over time.
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Category Distribution -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" style="color: black;">
+                        <i class="fas fa-chart-pie text-success me-2"></i>
+                        Food Category Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if categories and category_counts %}
+                        <canvas id="categoriesChart" 
+                                height="300" 
+                                data-categories="{{ categories|tojson }}" 
+                                data-counts="{{ category_counts|tojson }}">
+                        </canvas>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                            <h5>No Category Data Yet</h5>
+                            <p class="text-muted">
+                                {% if current_user.role == 'donor' %}
+                                    Donate different types of food to see the distribution.
+                                {% else %}
+                                    Pick up different categories of food to see the distribution.
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-success me-2"></i>
+                        Recent Activity
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Food Item</th>
+                                    {% if current_user.role == 'donor' %}
+                                        <th>Recipient</th>
+                                    {% else %}
+                                        <th>Donor</th>
+                                    {% endif %}
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if pickups %}
+                                    {% for pickup in pickups %}
+                                        <tr>
+                                            <td>{{ pickup.created_at|format_date }}</td>
+                                            <td>
+                                                <a href="{{ url_for('food_detail', listing_id=pickup.listing.id) }}" class="text-decoration-none fw-bold">
+                                                    {{ pickup.listing.title }}
+                                                </a>
+                                            </td>
+                                            {% if current_user.role == 'donor' %}
+                                                <td>{{ pickup.recipient.name }}</td>
+                                            {% else %}
+                                                <td>{{ pickup.donor.name }}</td>
+                                            {% endif %}
+                                            <td>
+                                                <span class="badge category-badge" data-category="{{ pickup.listing.category }}">
+                                                    {{ pickup.listing.category }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if pickup.status == 'pending' %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% elif pickup.status == 'confirmed' %}
+                                                    <span class="badge bg-info">Confirmed</span>
+                                                {% elif pickup.status == 'completed' %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% elif pickup.status == 'cancelled' %}
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5">
+                                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                            <h5>No Activity Yet</h5>
+                                            <p class="text-muted">
+                                                {% if current_user.role == 'donor' %}
+                                                    Your completed donations will appear here.
+                                                {% else %}
+                                                    Your food pickups will appear here.
+                                                {% endif %}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

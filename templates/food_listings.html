@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Food Listings - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold mb-1">Available Food</h1>
+            <p class="text-muted">Browse available food donations in your area</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% if current_user.is_authenticated and current_user.role == 'donor' %}
+                <a href="{{ url_for('create_listing') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i> Create New Listing
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Search and Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form action="{{ url_for('food_listings') }}" method="GET" class="row g-3">
+                <div class="col-md-5">
+                    <label for="query" class="form-label">{{ form.query.label }}</label>
+                    {{ form.query(class="form-control", placeholder="Search by food name or description") }}
+                </div>
+                <div class="col-md-3">
+                    <label for="category" class="form-label">{{ form.category.label }}</label>
+                    {{ form.category(class="form-select") }}
+                </div>
+                <div class="col-md-3">
+                    <label for="distance" class="form-label">{{ form.distance.label }}</label>
+                    {{ form.distance(class="form-select") }}
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    {{ form.submit(class="btn btn-success w-100") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Map View -->
+    <!-- <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div id="map" data-page-type="listings"></div>
+        </div>
+    </div> -->
+    
+    <!-- Listings -->
+    <div class="row">
+        {% if listings %}
+            {% for listing in listings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card food-card h-100 shadow-sm">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                            {% if listing.image_filename %}
+                                <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" style="height: 300px;" class="img-fluid card-img-top" alt="{{ listing.title }}">
+                            {% else %}
+                                <i class="fas fa-utensils fa-3x text-secondary my-4"></i>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ listing.title }}</h5>
+                                <span class="badge category-badge" data-category="{{ listing.category }}">
+                                    {{ listing.category }}
+                                </span>
+                            </div>
+                            <p class="card-text text-muted mb-1">
+                                <i class="fas fa-store me-1"></i> {{ listing.donor.name }}
+                            </p>
+                            <p class="card-text text-muted small mb-1">Quantity: {{ listing.quantity }}</p>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="far fa-clock me-1"></i>
+                                Expires: {{ listing.expiration_date|format_date }}
+                                <span class="ms-1 expiration-counter" data-expiration="{{ listing.expiration_date }}"></span>
+                            </p>
+                            <p class="card-text mb-3">{{ listing.description|truncate(100) }}</p>
+                            
+                            {% if hasattr(listing, 'distance') and listing.distance is not none %}
+                                <p class="card-text text-muted small mb-3">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ "%.1f"|format(listing.distance) }} miles away
+                                </p>
+                            {% endif %}
+                            
+                            <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="btn btn-outline-success">View Details</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>Posted: {{ listing.created_at|format_date }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h3>No Food Listings Found</h3>
+                <p class="text-muted mb-4">Try adjusting your search filters or check back later for new listings.</p>
+                <a href="{{ url_for('food_listings') }}" class="btn btn-outline-success">Clear Filters</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

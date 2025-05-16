@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0">Admin Dashboard</h1>
+            <p class="text-muted">Platform management and oversight</p>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <!-- Platform Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Users</h6>
+                            <h3 class="mb-0">{{ stats.total_users or 0 }}</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">
+                        <span class="me-3">
+                            <i class="fas fa-store me-1"></i> {{ stats.donors or 0 }} Donors
+                        </span>
+                        <span>
+                            <i class="fas fa-hands-helping me-1"></i> {{ stats.recipients or 0 }} Recipients
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Listings</h6>
+                            <h3 class="mb-0">{{ stats.total_listings or 0 }}</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-list-alt"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">
+                        <span class="me-3">
+                            <i class="fas fa-check-circle me-1"></i> {{ stats.completed_donations or 0 }} Completed
+                        </span>
+                        <span>
+                            <i class="fas fa-clock me-1"></i> {{ stats.available_listings or 0 }} Available
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Food Saved (lbs)</h6>
+                            <h3 class="mb-0">{{ stats.food_saved_lbs or 0 }}</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-weight-scale"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">
+                        <span>
+                            <i class="fas fa-calendar-alt me-1"></i> Platform Total
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">CO₂ Reduction (kg)</h6>
+                            <h3 class="mb-0">{{ stats.carbon_reduction_kg or 0 }}</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">
+                        <span>
+                            <i class="fas fa-globe me-1"></i> Environmental Impact
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">
+                <i class="fas fa-users me-2"></i> Users
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="listings-tab" data-bs-toggle="tab" data-bs-target="#listings" type="button" role="tab" aria-controls="listings" aria-selected="false">
+                <i class="fas fa-list-alt me-2"></i> Listings
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pickups-tab" data-bs-toggle="tab" data-bs-target="#pickups" type="button" role="tab" aria-controls="pickups" aria-selected="false">
+                <i class="fas fa-exchange-alt me-2"></i> Pickups
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-view" type="button" role="tab" aria-controls="map-view" aria-selected="false">
+                <i class="fas fa-map-marked-alt me-2"></i> Map View
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabContent">
+        <!-- Users Tab -->
+        <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Phone</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if users %}
+                                    {% for user in users %}
+                                        <tr>
+                                            <td>{{ user.id }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.name }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td>
+                                                {% if user.role == 'donor' %}
+                                                    <span class="badge bg-success">Donor</span>
+                                                {% elif user.role == 'recipient' %}
+                                                    <span class="badge bg-primary">Recipient</span>
+                                                {% elif user.role == 'admin' %}
+                                                    <span class="badge bg-danger">Admin</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ user.phone }}</td>
+                                            <td>{{ user.date_joined|format_date }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">No users found.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Listings Tab -->
+        <div class="tab-pane fade" id="listings" role="tabpanel" aria-labelledby="listings-tab">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Donor</th>
+                                    <th>Category</th>
+                                    <th>Expiration</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if listings %}
+                                    {% for listing in listings %}
+                                        <tr>
+                                            <td>{{ listing.id }}</td>
+                                            <td>
+                                                <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="text-decoration-none fw-bold">
+                                                    {{ listing.title }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% set donor = listing.__class__.get_by_id(listing.donor_id) %}
+                                                {{ donor.name if donor else 'Unknown' }}
+                                            </td>
+                                            <td>
+                                                <span class="badge category-badge" data-category="{{ listing.category }}">
+                                                    {{ listing.category }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ listing.expiration_date|format_date }}
+                                                <br>
+                                                <small class="expiration-counter" data-expiration="{{ listing.expiration_date }}"></small>
+                                            </td>
+                                            <td>
+                                                {% if listing.status == 'available' %}
+                                                    <span class="badge bg-success">Available</span>
+                                                {% elif listing.status == 'pending' %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% elif listing.status == 'reserved' %}
+                                                    <span class="badge bg-info">Reserved</span>
+                                                {% elif listing.status == 'completed' %}
+                                                    <span class="badge bg-secondary">Completed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ listing.created_at|format_date }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">No food listings found.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pickups Tab -->
+        <div class="tab-pane fade" id="pickups" role="tabpanel" aria-labelledby="pickups-tab">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Listing</th>
+                                    <th>Donor</th>
+                                    <th>Recipient</th>
+                                    <th>Pickup Time</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if pickups %}
+                                    {% for pickup in pickups %}
+                                        {% set listing = pickup.__class__.get_by_id(pickup.listing_id) %}
+                                        {% set donor = User.get_by_id(listing.donor_id) if listing else None %}
+                                        {% set recipient = User.get_by_id(pickup.recipient_id) %}
+                                        <tr>
+                                            <td>{{ pickup.id }}</td>
+                                            <td>
+                                                {% if listing %}
+                                                    <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="text-decoration-none fw-bold">
+                                                        {{ listing.title }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-muted">Unknown Listing</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ donor.name if donor else 'Unknown' }}</td>
+                                            <td>{{ recipient.name if recipient else 'Unknown' }}</td>
+                                            <td>{{ pickup.pickup_time|format_date('%Y-%m-%d %H:%M') }}</td>
+                                            <td>
+                                                {% if pickup.status == 'pending' %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% elif pickup.status == 'confirmed' %}
+                                                    <span class="badge bg-info">Confirmed</span>
+                                                {% elif pickup.status == 'completed' %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% elif pickup.status == 'cancelled' %}
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ pickup.created_at|format_date }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">No pickup records found.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map View Tab -->
+        <div class="tab-pane fade" id="map-view" role="tabpanel" aria-labelledby="map-tab">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div id="map" data-page-type="donors" style="height: 600px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

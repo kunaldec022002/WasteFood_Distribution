@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Pickup - {{ listing.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('food_listings') }}">Food Listings</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('food_detail', listing_id=listing.id) }}">{{ listing.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Request Pickup</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h2 class="h4 mb-0">
+                        <i class="fas fa-handshake text-success me-2"></i>
+                        Request Pickup
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0 me-3">
+                                {% if listing.image_filename %}
+                                    <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;" alt="{{ listing.title }}">
+                                {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                        <i class="fas fa-utensils fa-2x text-secondary"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1">{{ listing.title }}</h5>
+                                <div class="mb-1">
+                                    <span class="badge category-badge" data-category="{{ listing.category }}">
+                                        {{ listing.category }}
+                                    </span>
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    <i class="far fa-clock me-1"></i>
+                                    Expires: {{ listing.expiration_date|format_date }}
+                                    <span class="ms-1 expiration-counter" data-expiration="{{ listing.expiration_date }}"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <p class="mb-4">Please specify when you would like to pick up this food. The donor will be notified of your request.</p>
+                    
+                    <form method="POST" action="{{ url_for('request_pickup', listing_id=listing.id) }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="pickup_time" class="form-label">{{ form.pickup_time.label }} <span class="text-danger">*</span></label>
+                            {{ form.pickup_time(class="form-control", type="datetime-local") }}
+                            {% if form.pickup_time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.pickup_time.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="form-text">Choose a time at least 1 hour in the future but before the expiration date.</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="notes" class="form-label">{{ form.notes.label }}</label>
+                            {{ form.notes(class="form-control", rows=3, placeholder="Any special instructions or questions for the donor?") }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card bg-sustainability mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-info-circle text-success me-2"></i>
+                                    Pickup Information
+                                </h5>
+                                <!-- <p class="mb-2"><strong>Donor:</strong> {{ listing.donor.name }}</p> -->
+                                <!-- <p class="mb-2"><strong>Phone:</strong> {{ listing.donor.phone }}</p> -->
+                                <p class="mb-0"><strong>Pickup Location:</strong> {{ listing.location }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Tip:</strong> Bring your own containers and be on time for pickup. If you need to cancel, please do so as soon as possible.
+                        </div>
+                        
+                        <div class="text-end">
+                            <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                            {{ form.submit(class="btn btn-success") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

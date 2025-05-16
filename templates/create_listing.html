@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Food Listing - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Food Listing</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h2 class="h4 mb-0" style="color: black;">
+                        <i class="fas fa-plus-circle text-success me-2"></i>
+                        Create New Food Listing
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Share your surplus food with those who need it. Please provide accurate information about the food you're donating.</p>
+                    
+                    <form method="POST" action="{{ url_for('create_listing') }}" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+                                    {{ form.title(class="form-control", placeholder="Enter a descriptive title for your food item") }}
+                                    {% if form.title.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.title.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">{{ form.category.label }} <span class="text-danger">*</span></label>
+                                    {{ form.category(class="form-select") }}
+                                    {% if form.category.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.category.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">{{ form.quantity.label }} <span class="text-danger">*</span></label>
+                                    {{ form.quantity(class="form-control", placeholder="E.g., '5 servings', '2 lbs', etc.") }}
+                                    {% if form.quantity.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.quantity.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="expiration_date" class="form-label">{{ form.expiration_date.label }} <span class="text-danger">*</span></label>
+                                    {{ form.expiration_date(class="form-control", type="date") }}
+                                    {% if form.expiration_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.expiration_date.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">{{ form.description.label }} <span class="text-danger">*</span></label>
+                            {{ form.description(class="form-control", rows=4, placeholder="Provide details about the food, including ingredients, preparation, and any allergens") }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="location" class="form-label">{{ form.location.label }} <span class="text-danger">*</span></label>
+                            {{ form.location(class="form-control", placeholder="Enter the pickup address") }}
+                            {% if form.location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.location.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Location picker map -->
+                        <!-- <div class="mb-4">
+                            <label class="form-label">Pin Pickup Location <span class="text-muted">(Click on the map to set location)</span></label>
+                            <div id="map" class="location-picker-map" data-page-type="location-picker" data-lat-field="latitude" data-lng-field="longitude" data-address-field="location"></div>
+                            {{ form.latitude(id="latitude", type="hidden") }}
+                            {{ form.longitude(id="longitude", type="hidden") }}
+                        </div> -->
+                        
+                        <div class="mb-4">
+                            <label for="image" class="form-label">{{ form.image.label }}</label>
+                            <div class="input-group">
+                                {{ form.image(class="form-control custom-file-input") }}
+                                <label class="input-group-text" for="image">Browse</label>
+                            </div>
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.image.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="form-text">Add a photo of the food to help recipients identify it. (JPG, PNG only, max 16MB)</div>
+                            {% endif %}
+                            <div id="image-preview" class="mt-2"></div>
+                        </div>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Food Safety Reminder:</strong> Please ensure that all food is safe for consumption and properly stored. Include any handling instructions in the description.
+                        </div>
+                        
+                        <div class="text-end">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                            {{ form.submit(class="btn btn-success") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

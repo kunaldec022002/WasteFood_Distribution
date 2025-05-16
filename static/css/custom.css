@@ -1,0 +1,202 @@
+/* Custom styles for food waste management platform */
+
+/* Custom color for food waste theme */
+:root {
+    --green-primary: #28a745;
+    --green-light: #5dd879;
+    --green-dark: #1e7e34;
+    --amber: #ffc107;
+    --amber-dark: #d39e00;
+}
+
+/* Custom background color for sustainability-themed sections */
+.bg-sustainability {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+/* Custom badge colors for food categories */
+.bg-purple {
+    background-color: rgba(111, 66, 193, 0.8) !important;
+    color: white !important;
+}
+
+/* Custom styling for map container */
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Make location picker map smaller */
+.location-picker-map {
+    height: 300px;
+}
+
+/* Food card styling */
+.food-card {
+    transition: transform 0.2s ease;
+    height: 100%;
+}
+
+.food-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.food-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Donor/recipient profile cards */
+.profile-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.profile-card .profile-header {
+    height: 80px;
+    background: linear-gradient(to right, var(--green-primary), var(--green-light));
+}
+
+.profile-card .profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid white;
+    margin-top: -40px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dashboard stats cards */
+.stats-card {
+    border-left: 4px solid var(--green-primary);
+    transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-3px);
+}
+
+.stats-card .stats-icon {
+    font-size: 2.5rem;
+    color: var(--green-primary);
+    opacity: 0.6;
+}
+
+/* Timeline for pickup status */
+.timeline {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    height: 100%;
+    width: 4px;
+    background: var(--green-light);
+    opacity: 0.3;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--green-primary);
+    background: var(--bs-dark);
+}
+
+.timeline-item.completed .timeline-marker {
+    background: var(--green-primary);
+}
+
+/* Custom styling for food listing status badges */
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    font-weight: bold;
+}
+
+/* Hero section on homepage */
+.hero-section {
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5));
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Custom footer styling */
+.footer {
+    background-color: var(--bs-dark);
+    padding: 3rem 0;
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Category icon styling */
+.category-icon {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+    }
+    
+    .timeline:before {
+        left: 15px;
+    }
+    
+    .timeline-item {
+        padding-left: 40px;
+    }
+    
+    .timeline-marker {
+        left: 10px;
+    }
+}

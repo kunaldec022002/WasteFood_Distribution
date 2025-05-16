@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block title %}FoodShare - Reducing Food Waste Together{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-white mb-5" style="background: url('https://source.unsplash.com/featured/?food,sustainability') center/cover no-repeat;">
+    <div class="container hero-content">
+        <div class="row">
+            <div class="col-lg-7">
+                <h1 class="display-4 fw-bold mb-3">Reduce Food Waste, Feed Communities</h1>
+                <p class="lead mb-4">Connect with local food donors and recipients to share surplus food and reduce waste. Together, we can make a difference.</p>
+                <div class="d-grid gap-2 d-md-flex">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg px-4 me-md-2">Go to Dashboard</a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-success btn-lg px-4 me-md-2">Register Now</a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Stats Section -->
+    <section class="mb-5">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-utensils fa-3x text-success mb-3"></i>
+                        <h3 class="display-6 fw-bold">{{ stats.completed_donations or 0 }}</h3>
+                        <p class="lead">Meals Shared</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-weight-scale fa-3x text-success mb-3"></i>
+                        <h3 class="display-6 fw-bold">{{ stats.food_saved_lbs or 0 }}</h3>
+                        <p class="lead">Pounds of Food Saved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                        <h3 class="display-6 fw-bold">{{ stats.carbon_reduction_kg or 0 }}</h3>
+                        <p class="lead">kg CO₂ Emissions Avoided</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="mb-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">How It Works</h2>
+            <p class="lead text-muted">Connect food donors with recipients in three easy steps</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-plus fa-2x text-success"></i>
+                        </div>
+                        <h4>1. Sign Up</h4>
+                        <p class="text-muted">Register as a food donor or recipient. Businesses, organizations, and individuals welcome!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-list-alt fa-2x text-success"></i>
+                        </div>
+                        <h4>2. Create or Browse Listings</h4>
+                        <p class="text-muted">Donors list available food. Recipients browse and request what they need.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-handshake fa-2x text-success"></i>
+                        </div>
+                        <h4>3. Coordinate & Pickup</h4>
+                        <p class="text-muted">Arrange pickup times and locations. Complete the transfer and reduce food waste!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Latest Listings Section -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Latest Food Listings</h2>
+                <p class="text-muted">Recently added available food</p>
+            </div>
+            <a href="{{ url_for('food_listings') }}" class="btn btn-outline-success">View All</a>
+        </div>
+        <div class="row">
+            {% if latest_listings %}
+                {% for listing in latest_listings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card food-card h-100 shadow-sm">
+                        {% if listing.status != 'available' %}
+                        <div class="status-badge badge bg-secondary">{{ listing.status }}</div>
+                        {% endif %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                            {% if listing.image_filename %}
+                            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" class="img-fluid card-img-top" alt="{{ listing.title }}">
+                            {% else %}
+                            <i class="fas fa-utensils fa-3x text-secondary my-4"></i>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ listing.title }}</h5>
+                                <span class="badge bg-success ms-1 category-badge" data-category="{{ listing.category }}">
+                                    {{ listing.category }}
+                                </span>
+                            </div>
+                            <p class="card-text text-muted small mb-1">Quantity: {{ listing.quantity }}</p>
+                            <p class="card-text text-muted small mb-3">
+                                <i class="far fa-clock me-1"></i>
+                                Expires: {{ listing.expiration_date|format_date }}
+                                <span class="ms-1 expiration-counter" data-expiration="{{ listing.expiration_date }}"></span>
+                            </p>
+                            <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="btn btn-sm btn-outline-success">View Details</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>Posted: {{ listing.created_at|format_date }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No food listings available at the moment. Please check back soon!
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    
+    <!-- Donor & Recipient Info Section -->
+    <section class="mb-5">
+        <div class="row">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title fw-bold mb-3">
+                            <i class="fas fa-store text-success me-2"></i>
+                            For Food Donors
+                        </h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Reduce Food Waste</h5>
+                                    <p class="text-muted mb-0">Share surplus food instead of throwing it away.</p>
+                                </div>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Help Your Community</h5>
+                                    <p class="text-muted mb-0">Support those in need with your excess food.</p>
+                                </div>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Track Your Impact</h5>
+                                    <p class="text-muted mb-0">See how much food you've saved from waste.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Easy Coordination</h5>
+                                    <p class="text-muted mb-0">Simple pickup arrangement with recipients.</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-4">
+                            <a href="{{ url_for('register') }}" class="btn btn-success">Register as Donor</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title fw-bold mb-3">
+                            <i class="fas fa-users text-success me-2"></i>
+                            For Food Recipients
+                        </h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Access Free Food</h5>
+                                    <p class="text-muted mb-0">Find available food donations in your area.</p>
+                                </div>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Variety of Options</h5>
+                                    <p class="text-muted mb-0">Browse different food categories based on your needs.</p>
+                                </div>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Real-Time Notifications</h5>
+                                    <p class="text-muted mb-0">Get updated when new food becomes available.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex">
+                                <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">Simple Pickup Process</h5>
+                                    <p class="text-muted mb-0">Request food and arrange convenient pickup times.</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-4">
+                            <a href="{{ url_for('register') }}" class="btn btn-success">Register as Recipient</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Map Section -->
+    <section class="mb-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Find Food Near You</h2>
+            <p class="lead text-muted">Explore available food donations in your area</p>
+        </div>
+        <!-- <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div id="map" data-page-type="listings"></div>
+            </div>
+        </div> -->
+    </section>
+</div>
+{% endblock %}

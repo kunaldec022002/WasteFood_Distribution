@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ listing.title }} - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('food_listings') }}">Food Listings</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ listing.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title h2 fw-bold mb-0">{{ listing.title }}</h1>
+                        <span class="badge category-badge fs-6" data-category="{{ listing.category }}">
+                            {{ listing.category }}
+                        </span>
+                    </div>
+                    
+                    {% if listing.status != 'available' %}
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            This food listing is currently <strong>{{ listing.status }}</strong> and may not be available.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="food-image mb-4">
+                        {% if listing.image_filename %}
+                            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" style="height: 300px;" class="img-fluid rounded" alt="{{ listing.title }}">
+                        {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center p-5">
+                                <i class="fas fa-utensils fa-5x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="card bg-sustainability h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-info-circle text-success me-2"></i>
+                                        Food Details
+                                    </h5>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2">
+                                            <strong>Quantity:</strong> {{ listing.quantity }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Category:</strong> {{ listing.category }}
+                                        </li>
+                                        <li class="mb-0">
+                                            <strong>Expiration:</strong> {{ listing.expiration_date|format_date }}
+                                            <span class="ms-2 expiration-counter" data-expiration="{{ listing.expiration_date }}"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-sustainability h-100">
+                                <div class="card-body">
+                                    <!-- <h5 class="card-title">
+                                        <i class="fas fa-map-marker-alt text-success me-2"></i>
+                                        Pickup Location
+                                    </h5> -->
+                                    <p class="mb-2">{{ listing.location }}</p>
+                                    
+                                    {% if hasattr(listing, 'distance') and listing.distance is not none %}
+                                        <p class="mb-0">
+                                            <i class="fas fa-route text-muted me-1"></i>
+                                            {{ "%.1f"|format(listing.distance) }} miles from your location
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Description</h5>
+                    <p class="mb-4">{{ listing.description }}</p>
+                    
+                    <h5 class="mb-3">Pickup Instructions</h5>
+                    <p class="mb-0">Please contact the donor to arrange pickup details. Remember to bring your own containers if needed.</p>
+                </div>
+            </div>
+            
+            <!-- Map -->
+            <!-- <div class="card shadow-sm mb-4 mb-lg-0">
+                <div class="card-body p-0">
+                    <div id="map" data-page-type="listings"></div>
+                </div>
+            </div> -->
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Donor Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user text-success me-2"></i>
+                        Donor Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-1">{{ listing.donor.name }}</h5>
+                    {% if listing.donor.role == 'donor' %}
+                        <p class="badge bg-success mb-3">Verified Donor</p>
+                    {% endif %}
+                    
+                    <p class="mb-1">
+                        <i class="fas fa-phone text-muted me-2"></i>
+                        {{ listing.donor.phone }}
+                    </p>
+                    <p class="mb-3">
+                        <i class="fas fa-envelope text-muted me-2"></i>
+                        {{ listing.donor.email }}
+                    </p>
+                    
+                    <p class="mb-0">
+                        <i class="fas fa-calendar-alt text-muted me-2"></i>
+                        Member since {{ listing.donor.date_joined|format_date }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Pickup Request Form -->
+            {% if current_user.is_authenticated and current_user.role == 'recipient' and listing.status == 'available' %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-hand-holding-heart text-success me-2"></i>
+                            Request This Food
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">This food is currently available for pickup. Submit a request to arrange a pickup time with the donor.</p>
+                        <a href="{{ url_for('request_pickup', listing_id=listing.id) }}" class="btn btn-success w-100">
+                            Request Pickup
+                        </a>
+                    </div>
+                </div>
+            {% elif not current_user.is_authenticated %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <p class="mb-3">Please login or register as a recipient to request this food.</p>
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('login') }}" class="btn btn-success">Login</a>
+                            <a href="{{ url_for('register') }}" class="btn btn-outline-success">Register</a>
+                        </div>
+                    </div>
+                </div>
+            {% elif listing.status != 'available' %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-0">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            This food listing is currently <strong>{{ listing.status }}</strong> and no longer available for request.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Similar Listings -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" style="color: black;">Similar Food Listings</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% set similar_found = false %}
+                        {% for similar in listing.__class__.get_available_listings() %}
+                            {% if similar.id != listing.id and similar.category == listing.category and loop.index <= 4 %}
+                                {% set similar_found = true %}
+                                <a href="{{ url_for('food_detail', listing_id=similar.id) }}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ similar.title }}</h6>
+                                            <small class="text-muted">
+                                                Expires: {{ similar.expiration_date|format_date }}
+                                            </small>
+                                        </div>
+                                        <span class="badge category-badge" data-category="{{ similar.category }}">
+                                            {{ similar.category }}
+                                        </span>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if not similar_found %}
+                            <div class="list-group-item text-center py-4">
+                                <p class="text-muted mb-0">No similar listings available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

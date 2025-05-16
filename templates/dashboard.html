@@ -1,0 +1,464 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - FoodShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold">Dashboard</h1>
+        {% if current_user.role == 'donor' %}
+            <a href="{{ url_for('create_listing') }}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i> Create New Listing
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        {% if current_user.role == 'donor' %}
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Donations</h6>
+                                <h3 class="mb-0">{{ stats.total_donations or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Completed</h6>
+                                <h3 class="mb-0">{{ stats.completed_donations or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Pending Pickups</h6>
+                                <h3 class="mb-0">{{ stats.pending_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Impact</h6>
+                                <h3 class="mb-0">{{ stats.total_impact or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Requested Pickups</h6>
+                                <h3 class="mb-0">{{ stats.requested_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-shopping-basket"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Completed</h6>
+                                <h3 class="mb-0">{{ stats.completed_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Pending</h6>
+                                <h3 class="mb-0">{{ stats.pending_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Confirmed</h6>
+                                <h3 class="mb-0">{{ stats.confirmed_pickups or 0 }}</h3>
+                            </div>
+                            <div class="stats-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Donor Dashboard -->
+    {% if current_user.role == 'donor' %}
+        <!-- Active Listings -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0" style="color: black;">Your Food Listings</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Expiration</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if listings %}
+                                {% for listing in listings %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="text-decoration-none fw-bold">
+                                                {{ listing.title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge category-badge" data-category="{{ listing.category }}">
+                                                {{ listing.category }}
+                                            </span>
+                                        </td>
+                                        <td>{{ listing.quantity }}</td>
+                                        <td>
+                                            {{ listing.expiration_date|format_date }}
+                                            <br>
+                                            <small class="expiration-counter" data-expiration="{{ listing.expiration_date }}"></small>
+                                        </td>
+                                        <td>
+                                            {% if listing.status == 'available' %}
+                                                <span class="badge bg-success">Available</span>
+                                            {% elif listing.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending Pickup</span>
+                                            {% elif listing.status == 'reserved' %}
+                                                <span class="badge bg-info">Reserved</span>
+                                            {% elif listing.status == 'completed' %}
+                                                <span class="badge bg-secondary">Completed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ listing.created_at|format_date }}</td>
+                                        <td class="text-end">
+                                            <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="btn btn-sm btn-outline-success">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="py-5">
+                                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                            <h5>No Food Listings Yet</h5>
+                                            <p class="text-muted mb-3">Share your surplus food with those who need it.</p>
+                                            <a href="{{ url_for('create_listing') }}" class="btn btn-success">
+                                                <i class="fas fa-plus me-2"></i> Create Your First Listing
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pickup Requests -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0" style="color: black;">Pickup Requests</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Food Item</th>
+                                <th>Recipient</th>
+                                <th>Pickup Time</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if pickups %}
+                                {% for pickup in pickups %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('food_detail', listing_id=pickup.listing.id) }}" class="text-decoration-none fw-bold">
+                                                {{ pickup.listing.title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle me-2 text-muted"></i>
+                                                {{ pickup.recipient.name }}
+                                            </div>
+                                            <small class="text-muted">{{ pickup.recipient.phone }}</small>
+                                        </td>
+                                        <td>{{ pickup.pickup_time|format_date('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            {% if pickup.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            {% elif pickup.status == 'confirmed' %}
+                                                <span class="badge bg-info">Confirmed</span>
+                                            {% elif pickup.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif pickup.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ pickup.created_at|format_date }}</td>
+                                        <td class="text-end">
+                                            {% if pickup.status == 'pending' %}
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='confirmed') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="confirmed">
+                                                        Confirm
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='cancelled') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="cancelled">
+                                                        Decline
+                                                    </button>
+                                                </form>
+                                            {% elif pickup.status == 'confirmed' %}
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='completed') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="completed">
+                                                        Complete
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='cancelled') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="cancelled">
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <h5>No Pickup Requests Yet</h5>
+                                        <p class="text-muted">When someone requests your food, it will appear here.</p>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+    <!-- Recipient Dashboard -->
+    {% else %}
+        <!-- My Pickups -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">My Pickups</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Food Item</th>
+                                <th>Donor</th>
+                                <th>Pickup Time</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if my_pickups %}
+                                {% for pickup in my_pickups %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('food_detail', listing_id=pickup.listing.id) }}" class="text-decoration-none fw-bold">
+                                                {{ pickup.listing.title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-store me-2 text-muted"></i>
+                                                {{ pickup.donor.name }}
+                                            </div>
+                                            <small class="text-muted">{{ pickup.donor.phone }}</small>
+                                        </td>
+                                        <td>{{ pickup.pickup_time|format_date('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            {% if pickup.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            {% elif pickup.status == 'confirmed' %}
+                                                <span class="badge bg-info">Confirmed</span>
+                                            {% elif pickup.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif pickup.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ pickup.created_at|format_date }}</td>
+                                        <td class="text-end">
+                                            {% if pickup.status == 'confirmed' %}
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='completed') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="completed">
+                                                        Complete
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='cancelled') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="cancelled">
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            {% elif pickup.status == 'pending' %}
+                                                <form method="POST" action="{{ url_for('update_pickup_status', pickup_id=pickup.id, status='cancelled') }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger pickup-status-btn" data-pickup-id="{{ pickup.id }}" data-status="cancelled">
+                                                        Cancel
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <i class="fas fa-shopping-basket fa-3x text-muted mb-3"></i>
+                                        <h5>No Pickups Yet</h5>
+                                        <p class="text-muted mb-3">Browse available food listings to request a pickup.</p>
+                                        <a href="{{ url_for('food_listings') }}" class="btn btn-success">
+                                            Find Available Food
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Available Food Listings -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Available Food Near You</h5>
+                <a href="{{ url_for('food_listings') }}" class="btn btn-sm btn-outline-success">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if available_listings %}
+                        {% for listing in available_listings %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card food-card h-100 shadow-sm">
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                                        {% if listing.image_filename %}
+                                            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" class="img-fluid card-img-top" alt="{{ listing.title }}">
+                                        {% else %}
+                                            <i class="fas fa-utensils fa-3x text-secondary my-4"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title mb-0">{{ listing.title }}</h5>
+                                            <span class="badge category-badge" data-category="{{ listing.category }}">
+                                                {{ listing.category }}
+                                            </span>
+                                        </div>
+                                        <p class="card-text text-muted small mb-1">Quantity: {{ listing.quantity }}</p>
+                                        <p class="card-text text-muted small mb-2">
+                                            <i class="far fa-clock me-1"></i>
+                                            Expires: {{ listing.expiration_date|format_date }}
+                                            <span class="ms-1 expiration-counter" data-expiration="{{ listing.expiration_date }}"></span>
+                                        </p>
+                                        
+                                        {% if hasattr(listing, 'distance') and listing.distance is not none %}
+                                            <p class="card-text text-muted small mb-3">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ "%.1f"|format(listing.distance) }} miles away
+                                            </p>
+                                        {% endif %}
+                                        
+                                        <a href="{{ url_for('food_detail', listing_id=listing.id) }}" class="btn btn-sm btn-outline-success">View Details</a>
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        <small>Posted: {{ listing.created_at|format_date }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5>No Available Food Listings</h5>
+                            <p class="text-muted mb-3">Check back soon or expand your search.</p>
+                            <a href="{{ url_for('food_listings') }}" class="btn btn-success">
+                                Browse All Listings
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

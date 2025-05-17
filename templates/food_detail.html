@@ -31,7 +31,7 @@
                     
                     <div class="food-image mb-4">
                         {% if listing.image_filename %}
-                            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" style="height: 300px;" class="img-fluid rounded" alt="{{ listing.title }}">
+                            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" style="height: 300px; width:600px;" class="img-fluid rounded" alt="{{ listing.title }}">
                         {% else %}
                             <div class="bg-light rounded d-flex align-items-center justify-content-center p-5">
                                 <i class="fas fa-utensils fa-5x text-secondary"></i>
@@ -74,7 +74,7 @@
                                     {% if hasattr(listing, 'distance') and listing.distance is not none %}
                                         <p class="mb-0">
                                             <i class="fas fa-route text-muted me-1"></i>
-                                            {{ "%.1f"|format(listing.distance) }} miles from your location
+                                            {{ "%.1f"|format(listing.location) }} miles from your location
                                         </p>
                                     {% endif %}
                                 </div>
@@ -102,7 +102,7 @@
             <!-- Donor Information -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0">
+                    <h5 class="mb-0" style="color: black;">
                         <i class="fas fa-user text-success me-2"></i>
                         Donor Information
                     </h5>
@@ -133,7 +133,7 @@
             {% if current_user.is_authenticated and current_user.role == 'recipient' and listing.status == 'available' %}
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0">
+                        <h5 class="mb-0" style="color: black;">
                             <i class="fas fa-hand-holding-heart text-success me-2"></i>
                             Request This Food
                         </h5>

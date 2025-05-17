@@ -125,7 +125,7 @@
                                 <label class="input-group-text" for="image">Browse</label>
                             </div>
                             {% if form.image.errors %}
-                                <div class="invalid-feedback d-block">
+                                <div class="invalid-feedback d-block" >
                                     {% for error in form.image.errors %}
                                         {{ error }}
                                     {% endfor %}
@@ -133,7 +133,7 @@
                             {% else %}
                                 <div class="form-text">Add a photo of the food to help recipients identify it. (JPG, PNG only, max 16MB)</div>
                             {% endif %}
-                            <div id="image-preview" class="mt-2"></div>
+                            <div id="image-preview"  class="mt-2"></div>
                         </div>
                         
                         <div class="alert alert-info mb-4">
